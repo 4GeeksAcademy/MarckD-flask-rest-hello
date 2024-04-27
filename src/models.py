@@ -8,7 +8,7 @@ class User(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     favorite_planet = db.relationship('Favorite_Planet', backref='user', lazy=True)
-    favorite_planet = db.relationship('Favorite_People', backref='user', lazy=True)
+    favorite_people = db.relationship('Favorite_People', backref='user', lazy=True)
 
     def __repr__(self):
         return '<User %r>' % self.id
@@ -25,7 +25,7 @@ class Planets(db.Model):
     name = db.Column(db.String(120), nullable=False)
     poblation = db.Column(db.Integer)
     galaxy = db.Column(db.String(120))
-    favorite_planet = db.relationship('Favorite_Planet', backref='Planet', lazy=True)
+    favorite_planet = db.relationship('Favorite_Planet', backref='planet', lazy=True)
 
     def __repr__(self):
         return '<planets %r>' % self.name
@@ -45,7 +45,7 @@ class Peoples(db.Model):
     last_name = db.Column(db.String(80))
     birth_day = db.Column(db.String(80))
     gender = db.Column(db.String(80))
-    favorite_people = db.relationship('Favorite_People', backref='People', lazy=True)
+    favorite_people = db.relationship('Favorite_People', backref='people', lazy=True)
 
     def __repr__(self):
         return '<people %r>' % self.name
@@ -70,8 +70,8 @@ class Favorite_People(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "user_id": self.User_id,
-            "people_id": self.people_id,
+            "user_id": self.user_id,
+            "people_id": self.people_id
         }
 
 
@@ -90,7 +90,6 @@ class Favorite_Planet(db.Model):
             "user_id": self.user_id,
             "planets_id": self.planets_id,
         }
-    
     
     
 

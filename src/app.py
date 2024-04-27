@@ -39,6 +39,8 @@ def sitemap():
 
 # AQUI EMPIEZAN LOS ENDPOINTS
 
+#TRAEME TODOS LOS USUARIOS
+
 @app.route('/user', methods=['GET'])
 def get_all_user():
     all_user = User.query.all()
@@ -46,7 +48,7 @@ def get_all_user():
 
     return jsonify(results), 200
 
-
+#TRAEME TODOS LOS CHARACTERS
 
 @app.route('/peoples', methods=['GET'])
 def get_people():
@@ -55,6 +57,7 @@ def get_people():
 
     return jsonify(results), 200
 
+#TREAME UN CHARACTER POR SU ID
 
 @app.route('/peoples/<int:people_id>', methods=['GET'])
 def get_one_people(people_id):
@@ -62,6 +65,7 @@ def get_one_people(people_id):
     
     return jsonify(people.serialize()), 200
 
+#TRAEME TODOS LOS PLANETAS
 
 @app.route('/planets', methods=['GET'])
 def get_planets():
@@ -70,32 +74,35 @@ def get_planets():
 
     return jsonify(results), 200
 
+#TRAEME UN PLANETA POR SU ID
 
 @app.route('/planets/<int:planet_id>', methods=['GET'])
 def get_one_planet(planet_id):
     Planet = Planets.query.filter_by(id=planet_id).first()
     
-    return jsonify(Planet.serialize(), 200)
+    return jsonify(Planet.serialize()), 200
 
+#TRAEME LOS PLANETAS FAVORITOS DE UN USUARIO
 
-
-@app.route('/user/favorites/planet/<int:user_id>', methods=['GET'])
-def get_favorite_planet(user_id):
-    all_favorite_planet = Favorite_Planet.query.filter_by(id=user_id).all()
+@app.route('/favorites/planets/<int:favorite_id>', methods=['GET'])
+def get_favorite_planet(favorite_id):
+    all_favorite_planet = Favorite_Planet.query.filter_by(id=favorite_id).all()
     results = list(map(lambda element:element.serialize(), all_favorite_planet))
 
     return jsonify(results), 200
 
+#TRAEME LOS CHARACTERS FAVORITOS DE UN USUARIO
 
-@app.route('/users/favorites/people/<int:user_id>', methods=['GET'])
-def get_favorite_people(user_id):
-    all_favorite_people = Favorite_People.query.filter_by(id=user_id).all()
+@app.route('/favorites/people/<int:favorite_id>', methods=['GET'])
+def get_favorite_people(favorite_id):
+    all_favorite_people = Favorite_People.query.filter_by(id=favorite_id).all()
     results = list(map(lambda element:element.serialize(), all_favorite_people))
 
     return jsonify(results), 200
 
+#CREA UN NUEVO FAVORITO DE PLANETA
 
-@app.route('/users/favorite/planet', methods=['POST'])
+@app.route('/favorites/planet', methods=['POST'])
 def add_favorite_planet():
     print(request.get_json())
     user_id = request.get_json()['user_id']
@@ -106,10 +113,68 @@ def add_favorite_planet():
     db.session.commit()
 
     response_body = {
-       'message': 'Favorito añadido correctamente'
+       'message': 'Planeta Favorito añadido correctamente'
     }
 
     return jsonify(response_body), 200
+
+#CREA UN NUEVO FAVORITO DE PEOPLE
+
+@app.route('/favorites/people', methods=['POST'])
+def add_favorite_people():
+    print(request.get_json())
+    user_id = request.get_json()['user_id']
+    people_id = request.get_json()['peoples_id']
+
+    favorite_people = Favorite_People(user_id = user_id, people_id = people_id)
+    db.session.add(favorite_people)
+    db.session.commit()
+
+    response_body = {
+       'message': 'Character Favorito añadido correctamente'
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/favorites/people/delete/<int:people_id>', methods=['DELETE'])
+def delete_favorite_people(people_id):
+    delete = Favorite_People.query.filter_by(id=people_id).first()
+
+    if delete:
+        
+        db.session.delete(delete)
+        db.session.commit()
+
+        response_body = {
+           'message': 'Character Favorito eliminado correctamente'
+        }
+        return jsonify(response_body), 200
+    else:
+        response_body = {
+           'message': 'El favorito no existe'
+        }
+        return jsonify(response_body), 404
+
+@app.route('/favorites/planet/delete/<int:planet_id>', methods=['DELETE'])
+def delete_favorite_planet(planet_id):
+    delete = Favorite_Planet.query.filter_by(id=planet_id).first()
+
+    if delete:
+        
+        db.session.delete(delete)
+        db.session.commit()
+
+        response_body = {
+           'message': 'Planeta Favorito eliminado correctamente'
+        }
+        return jsonify(response_body), 200
+    else:
+        response_body = {
+           'message': 'El favorito no existe'
+        }
+        return jsonify(response_body), 404
+
+
 # Aquí termina mi codigo
 
 # this only runs if `$ python src/app.py` is executed
