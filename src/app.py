@@ -84,18 +84,18 @@ def get_one_planet(planet_id):
 
 #TRAEME LOS PLANETAS FAVORITOS DE UN USUARIO
 
-@app.route('/favorites/planets/<int:favorite_id>', methods=['GET'])
-def get_favorite_planet(favorite_id):
-    all_favorite_planet = Favorite_Planet.query.filter_by(id=favorite_id).all()
+@app.route('/favorites/planets/<int:user_id>', methods=['GET'])
+def get_favorite_planet(user_id):
+    all_favorite_planet = Favorite_Planet.query.filter_by(user_id=user_id).all()
     results = list(map(lambda element:element.serialize(), all_favorite_planet))
 
     return jsonify(results), 200
 
 #TRAEME LOS CHARACTERS FAVORITOS DE UN USUARIO
 
-@app.route('/favorites/people/<int:favorite_id>', methods=['GET'])
-def get_favorite_people(favorite_id):
-    all_favorite_people = Favorite_People.query.filter_by(id=favorite_id).all()
+@app.route('/favorites/people/<int:user_id>', methods=['GET'])
+def get_favorite_people(user_id):
+    all_favorite_people = Favorite_People.query.filter_by(user_id=user_id).all()
     results = list(map(lambda element:element.serialize(), all_favorite_people))
 
     return jsonify(results), 200
@@ -136,9 +136,9 @@ def add_favorite_people():
 
     return jsonify(response_body), 200
 
-@app.route('/favorites/people/delete/<int:people_id>', methods=['DELETE'])
-def delete_favorite_people(people_id):
-    delete = Favorite_People.query.filter_by(id=people_id).first()
+@app.route('/favorites/people/delete/<int:user_id>/<int:people_id>', methods=['DELETE'])
+def delete_favorite_people(people_id, user_id):
+    delete = Favorite_People.query.filter_by(people_id=people_id, user_id= user_id).first()
 
     if delete:
         
@@ -155,9 +155,9 @@ def delete_favorite_people(people_id):
         }
         return jsonify(response_body), 404
 
-@app.route('/favorites/planet/delete/<int:planet_id>', methods=['DELETE'])
-def delete_favorite_planet(planet_id):
-    delete = Favorite_Planet.query.filter_by(id=planet_id).first()
+@app.route('/favorites/planet/delete/<int:user_id>/<int:planets_id>', methods=['DELETE'])
+def delete_favorite_planet(planets_id, user_id):
+    delete = Favorite_Planet.query.filter_by(user_id=user_id, planets_id=planets_id).first()
 
     if delete:
         
